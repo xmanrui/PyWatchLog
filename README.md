@@ -2,6 +2,6 @@
 功能：监控日志文件是否有新增内容，如果有则输出新增内容。
 
 ## 测试
-1.运行demo.py
-2.在demo.log文件中后面随意输入几行文字，并保持
-3.demo.py打印出demo.log新增的内容
+* 1.运行demo.py
+* 2.generate_log函数会不断生成日志到demo.log文件中
+* 3.run_watch_log函数会打印出demo.log新增的内容
