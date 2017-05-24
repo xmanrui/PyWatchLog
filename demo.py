@@ -3,13 +3,14 @@
 import watchlog
 from watchdog.observers import Observer
 import time
+import multiprocessing
 
 
-def run_watchlog(logdir, logfile):
+def run_watch_log(log_dir, log_file):
     print('run watchlog...')
     observer = Observer()
-    event_handler = watchlog.LogFileEventHandler(logfile)
-    observer.schedule(event_handler, logdir, True)
+    event_handler = watchlog.LogFileEventHandler(log_file)
+    observer.schedule(event_handler, log_dir, True)
     observer.start()
 
     try:
@@ -20,8 +21,25 @@ def run_watchlog(logdir, logfile):
     observer.join()
     print('end watchlog!!!')
 
+
+def generate_log(log_path):
+    print('run generate_log....')
+    while True:
+        time.sleep(1)
+        with open(log_path, 'a') as fh:
+            msg = 'just for testing !!!\n'
+            fh.writelines(msg)
+            fh.flush()
+
+
 if __name__ == '__main__':
-    logfile = './log/demo.log'
-    logdir = './log'
-    run_watchlog(logdir, logfile)
+    log_file = './log/demo.log'
+    log_dir = './log'
+    p1 = multiprocessing.Process(target=run_watch_log, args=(log_dir, log_file))
+    p2 = multiprocessing.Process(target=generate_log, args=(log_file, ))
+
+    p1.start()
+    p2.start()
+    p1.join()
+    p2.join()
 
