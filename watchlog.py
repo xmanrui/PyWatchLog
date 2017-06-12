@@ -8,13 +8,7 @@ class LogFileEventHandler(FileSystemEventHandler):
     def __init__(self, log_filename):
         FileSystemEventHandler.__init__(self)
         self.log_filename = log_filename
-        texts = self.read_log_file()
-        self.line_num = len(texts)
-
-    def read_log_file(self):
-        with open(self.log_filename, 'r') as f:
-            all_the_text = f.readlines()
-        return all_the_text
+        self.size = os.path.getsize(log_filename)
 
     def on_modified(self, event):
         '''
@@ -28,15 +22,15 @@ class LogFileEventHandler(FileSystemEventHandler):
 
         if os.path.abspath(event.src_path) != os.path.abspath(self.log_filename):
             return
+        size = os.path.getsize(self.log_filename)
+        offset = size - self.size
 
-        all_the_text = self.read_log_file()
-        line_num = len(all_the_text)
-        if line_num != self.line_num:
-            offset = line_num - self.line_num
-            if offset > 0:
-                for i in range(offset):
-                    print(all_the_text[self.line_num + i].rstrip('\n'))
-            self.line_num = line_num
+        with open(self.log_filename, 'r') as fh:
+            fh.seek(self.size)
+            data = fh.read(offset)
+            print(data)
+
+        self.size = size
 
         print('*' * 80)
 
