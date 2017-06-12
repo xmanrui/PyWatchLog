@@ -25,11 +25,12 @@ def run_watch_log(log_dir, log_file):
 def generate_log(log_path):
     print('run generate_log....')
     while True:
-        time.sleep(1)
+        time.sleep(0.5)
         with open(log_path, 'a') as fh:
-            msg = 'just for testing !!!\n'
-            fh.writelines(msg)
-            fh.flush()
+            for i in range(10):
+                msg = time.strftime('test msg: %Y-%m-%d %H:%M:%S\n', time.localtime())
+                fh.writelines(msg)
+                fh.flush()
 
 
 if __name__ == '__main__':
