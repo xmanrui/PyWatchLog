@@ -2,6 +2,8 @@
 
 from watchdog.events import *
 import os
+from watchdog.observers import Observer
+import time
 
 
 class LogFileEventHandler(FileSystemEventHandler):
@@ -37,4 +39,26 @@ class LogFileEventHandler(FileSystemEventHandler):
         self.chunk_size = new_size
 
         print('*' * 80)
+
+
+def run_watch_log(log_dir, log_file):
+    print('run watchlog...')
+    file_path = os.path.join(log_dir, log_file)
+
+    if not os.path.exists(file_path):
+        raise ValueError('no such file: %s' % file_path)
+        return
+
+    observer = Observer()
+    event_handler = LogFileEventHandler(file_path)
+    observer.schedule(event_handler, log_dir, True)
+    observer.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()
+    print('end watchlog!!!')
 
