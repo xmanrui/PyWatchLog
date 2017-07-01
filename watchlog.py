@@ -8,7 +8,7 @@ class LogFileEventHandler(FileSystemEventHandler):
     def __init__(self, log_filename):
         FileSystemEventHandler.__init__(self)
         self.log_filename = log_filename
-        self.size = os.path.getsize(log_filename)
+        self.chunk_size = os.path.getsize(log_filename)
 
     def on_modified(self, event):
         '''
@@ -22,15 +22,19 @@ class LogFileEventHandler(FileSystemEventHandler):
 
         if os.path.abspath(event.src_path) != os.path.abspath(self.log_filename):
             return
-        size = os.path.getsize(self.log_filename)
-        offset = size - self.size
+        new_size = os.path.getsize(self.log_filename)
+        delta_size = new_size - self.chunk_size
+
+        if delta_size <= 0:
+            self.chunk_size = new_size
+            return
 
         with open(self.log_filename, 'r') as fh:
-            fh.seek(self.size)
-            data = fh.read(offset)
+            fh.seek(self.chunk_size)
+            data = fh.read(delta_size)
             print(data)
 
-        self.size = size
+        self.chunk_size = new_size
 
         print('*' * 80)
 
