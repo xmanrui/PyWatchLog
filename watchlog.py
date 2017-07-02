@@ -47,7 +47,6 @@ def run_watch_log(log_dir, log_file):
 
     if not os.path.exists(file_path):
         raise ValueError('no such file: %s' % file_path)
-        return
 
     observer = Observer()
     event_handler = LogFileEventHandler(file_path)
